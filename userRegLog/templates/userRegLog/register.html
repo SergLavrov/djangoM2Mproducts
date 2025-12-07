@@ -1,0 +1,58 @@
+{% extends 'products/home.html' %}
+
+{% block content %}
+
+  {#  Для примера применим стили для ввода данных - input!#}
+  <style>
+    .form-group input {
+        width: 200px;
+        height: 35px;
+        border-radius: 10px;
+        border: 2px solid green;
+    }
+  </style>
+
+  <p style="font-size: x-large; padding-left: 300px; padding-top: 25px"><b>Регистрация на сайте</b></p>
+
+  <form method="post" action="{% url 'register' %}" style="padding-top: 25px">
+{#  <form method="post" action="" style="padding-top: 25px">#}
+
+    {% csrf_token %}
+{#    Справочно: чтобы ошибки при валидации данных из коробки Django выводились на РУССКОМ ЯЗЫКЕ нужно#}
+{#    в SETTING поменять язык --> LANGUAGE_CODE = c 'en-us' на 'ru-ru'#}
+
+{#  Вариант 2 - выведем "отдельно" каждое поле через цикл FOR!#}
+
+{#  2.1 БЕЗ "стилизации" ФОРМЫ !!!#}
+{#    {% for field in form %}#}
+{#      <label for="">{{ field.label }}</label>#}
+{#      <div>{{ field }}</div>#}
+      {# У каждого field, т.е. у каждого элемента объекта Form есть свои ошибки/errors  #}
+      {# При form_invalid(form), т.е. если ОШИБКИ ЕСТЬ --> выведем их:#}
+{#      {% if field.errors %}#}
+{#        <p>{{ field.errors }}</p>#}
+{#      {% endif %}#}
+{#    {% endfor %}#}
+
+    {% for field in form %}
+{#  2.2 Для "стилизации" ФОРМЫ обернем ее в class="form-group !!!#}
+      <div class="form-group">
+        <label for="">{{ field.label }}</label>
+          {{ field }}
+{#         У каждого field, т.е. у каждого элемента объекта Form есть свои ошибки/errors  #}
+{#         При form_invalid(form), т.е. если ОШИБКИ ЕСТЬ --> выведем их:#}
+        {% if field.errors %}
+          <p>{{ field.errors }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+{#    Вариант 1 - стандартный, когда видны ВСЕ "УСЛОВИЯ при Регистрации"!#}
+{#    {{ form.as_p }}#}
+    <!-- вариант, когда каждый элемнт формы был с новой строки! -->
+
+    <button type="submit">Зарегистрироваться</button>
+
+  </form>
+
+{% endblock %}

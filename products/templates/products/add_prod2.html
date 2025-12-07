@@ -1,0 +1,93 @@
+{% extends 'products/home.html' %}
+
+{% block content %}
+
+  <div class="row col-12 offset-lg-2 col-lg-8">
+
+    <h4 class="pt-5" style="text-align: center; padding-bottom: 10px">Add product:</h4>
+
+    <form method="POST" class="row" enctype="multipart/form-data" action="{% url 'add-product' %}">
+
+      {% csrf_token %}
+
+      <div class="col-12 col-lg-6 pb-3">
+          <label for="inputnameprod" class="form-label fw-medium">Наименование товара</label>
+          <input type="text" name="name_prod" class="form-control" id="inputnameprod" placeholder="Введите название товара">
+      </div>
+
+      <div class="col-12 col-lg-6 pb-3">
+          <label for="inputarticle" class="form-label fw-medium">Артикул</label>
+          <input type="text" name="article" class="form-control" id="inputarticle" placeholder="Введите артикул товара">
+      </div>
+
+      <div class="col-12 col-lg-6 pb-3">
+        <label for="inputcategory" class="form-label fw-medium">Категория товара</label>
+        <select class="form-select" id="inputcategory" name="category_id">
+          <option selected disabled>Выберите категорию товара</option>
+
+          {% for category in categories %}
+
+          <option value="{{ category.id }}">{{ category.name_cat }}</option>
+
+          {% endfor %}
+        </select>
+      </div>
+{#      P.S.: value="{{ category.id }}">{{ category.name_cat }}#}
+{#            "category.name_cat" --> "category" берем из class Product(models.Model):#}
+{#                                   --> имя: name_cat = из class Category #}
+
+
+{#      1 Вар для ManyToManyField: через ВЫПАДАЮЩИЙ СПИСОК - select (можно выбрать только ОДИН размер !!!#}
+      <div class="col-12 col-lg-6 pb-3">
+        <label for="inputsize" class="form-label fw-medium">Размер</label>
+        <select class="form-select" id="inputsize" name="size_id">
+          <option selected disabled>Выберите размер</option>
+
+          {% for size in size_list %}
+
+          <option value="{{ size.id }}">{{ size.name_size }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <p>
+
+      <div class="col-12 col-lg-6 pb-3">
+        <label for="inputszstock" class="form-label fw-medium">Товар на складе</label>
+        <input type="number" name="size_in_stock" class="form-control" id="inputszstock" min="1"
+               placeholder="Введите количество товара">
+      </div>
+      <div class="col-12 col-lg-6 pb-3">
+        <label for="inputszprice" class="form-label fw-medium">Цена</label>
+        <input type="number" name="size_price" class="form-control" id="inputszprice" min="1"
+               placeholder="Введите цену товара">
+      </div>
+
+
+        {#      Добавление "ДОПОЛНИТЕЛЬНЫХ" ФОТО  - class ProductImage(models.Model):#}
+{#        Т.к. будет еще одно, либо НЕСКОЛЬКО доп-ных фото - в views используем  getlist !!!#}
+
+      <div class="col-12 pb-3" style="margin-bottom: 15px; padding-top: 10px">
+        <label for="image">Фото</label>
+        <input type="file" id="image" name="images_for_getlist" multiple>
+        <br>
+        <br>
+        <label for="image">Фото</label>
+        <input type="file" id="image" name="images_for_getlist" multiple>
+        <br>
+        <br>
+        <label for="image">Фото</label>
+        <input type="file" id="image" name="images_for_getlist" multiple>
+      </div>
+
+
+      <div class="col-12" style="padding-bottom: 15px">
+        <button type="submit" class="btn btn-secondary">Save</button>
+{#                                      При нажатии на SUBMIT данные отправляются на СЕРВЕР командой:#}
+{#                                      см выше:<form method="POST" class="row" action="{% url 'add-product' %}">#}
+{#        <a href="{% url 'get-products-list' %}" class="btn btn-outline-secondary">Back</a>#}
+
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

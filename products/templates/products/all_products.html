@@ -1,0 +1,70 @@
+{% extends 'products/home.html' %}
+
+{% block content %}
+
+{#  Обратиться к изображениям, привязанным к продукту можно двумя путями:#}
+{#  my_product.images.all() - где images - related_name, указанный в поле product модели Gallery.#}
+{##}
+{#  Gallery.objects.filter(product=my_product).#}
+
+{#ОТЛИЧНЫЙ ПРИМЕР - как обратиться к фоткам БЕЗ "related_name=images"#}
+{#  см. сайт: https://stackoverflow.com/questions/27942795/how-to-display-foreignkey-image-in-django#}
+{#  #}
+{#Вы должны следить за отношением В ОБРАТНОМ НАПРАВЛЕНИИ от до :ItemImageOfItem#}
+{##}
+{#{% for img in item.imageofitem_set.all %}#}
+{#    <img src="{{ img.picture.url }}"><br>#}
+{#{% endfor %}#}
+{#         Сделал Рабочий Вариант - вывести ВСЕ фото товара БЕЗ "related_name=product_images"#}
+{#            {% for i in product.productimage_set.all %}#}
+{#                <img src="{{ i.image.url }}" alt="Фото" height="350" width="300">#}
+{#            {% endfor %}#}
+<br>
+<div class="col-sm-10">
+
+      <div class="d-flex flex-row flex-wrap justify-content-flex-start row-gap-3 column-gap-3 px-4">
+        {% for product in products %}
+          <div class="card" style="width: 14rem; border-image: 10 fill">
+{#          ВАРИАНТ через related_name='product_images' - см. class Model --> def first_image(self):#}
+{#            Взяли толко 1-ое ФОТО из всех фоток, привязанных к данному товару, чтобы выести на ГЛАВНОЙ странице!#}
+{#            Для это в models.py - class Product(models.Model):#}
+{#            прописали функцию def first_image(self):#}
+{#                                  return self.product_images.first()#}
+
+            <img src="{{ product.first_image.image.url }}" class="card-img" alt="{{ product.name_prod }}">
+{#            P.S.#}
+{#            - product. - берем из class ProductImage#}
+{#            - first_image. - берем из class Product - из ф-ции def first_image(self)#}
+{#            - image. - берем из class ProductImage#}
+
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <h6 class="card-title">{{ product.name_prod }} - {{ product.article }}</h6>
+{#                    <h6 class="text-black-50">{{ product.price }} BYN</h6>#}
+              </div>
+
+{#                {{ product.sizes.size }}#}
+{#              Можно привязать к каждому продукту ВСЕ связанные с этим продуктом РАЗМЕРЫ (при добавлении)#}
+                {% for s in product.sizes.all %}
+                    {{ s.name_size }}
+                {% endfor %}
+                <p>
+{#                  <p class="card-text">{{ product.description }}</p>#}
+                  <div class="d-flex justify-content-between">
+                        <a href="{% url 'product-details' product.id %}" class="btn btn-outline-secondary btn-sm">Подробно</a>
+{#                        <a href="{% url 'add-to-basket' product.id %}" class="btn btn-outline-secondary">Add to basket</a>#}
+{#                        {% if user.is_authenticated %}#}
+{#                        <a href="{% url 'add-to-basket' product.id %}"><i class="fa fa-shopping-cart"></i></a>#}
+{#                                            {% endif %}#}
+                  </div>
+            </div>
+          </div>
+{#              <div>#}
+{#                <a href="{% url 'product-details' product.id %}">{{ product.name }}</a>#}
+{#              </div>#}
+        {% endfor %}
+      </div>
+
+</div>
+
+{% endblock %}

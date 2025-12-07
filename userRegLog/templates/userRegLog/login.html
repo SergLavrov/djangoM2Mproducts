@@ -1,0 +1,74 @@
+{% extends 'products/home.html' %}
+
+{#{% block content %}#}
+
+{#  Для примера применим стили для - input и label ! #}
+  <style>
+    input {
+        width: 200px;
+        height: 35px;
+        border-radius: 10px;
+        border: 2px solid green;
+    }
+    label {
+        font-size: 20px;
+        color: blue;
+    }
+  </style>
+
+  {#    СПРАВОЧНО: чтобы ошибки при валидации данных из коробки Django выводились на РУССКОМ ЯЗЫКЕ нужно#}
+  {#    в SETTING поменять язык --> LANGUAGE_CODE = c 'en-us' на 'ru-ru'#}
+
+  <p style="font-size: x-large; padding-left: 300px; padding-top: 25px"><b>Войти на сайт</b></p>
+
+  <form method="post" action="{% url 'login' %}" style="padding-top: 25px">
+
+    {% csrf_token %}
+
+    <!-- Вариант 1 - стандартный, когда каждый элемнт формы с новой строки!
+         В этом варианте выходит стандартная ошибка:
+         "Пожалуйста, введите правильные имя пользователя и пароль. Оба поля могут быть чувствительны к регистру."-->
+
+    {{ form.as_p }}
+
+{#    '''#}
+{#    Если нажать F12 (открыть средства разработчика) то "Под КАПОТОМ" увидим, #}
+{#    что {{ form.as_p }} по-умолчанию будет в виде 2-х параграфов:#}
+
+{#      ЗДЕСЬ тоже есть "input" и "label", к которым также можно применить СТИЛИ ! #}
+{#      БЕЗ цикла FOR и оборачивания в class="form-group !!!#}
+
+{#    <p>#}
+{#      <label for="id_username">Имя пользователя:</label>#}
+{#      <input type="text" name="username" value="sdff" autofocus="" autocapitalize="none" autocomplete="username"#}
+{#             maxlength="150" required="" id="id_username">#}
+{#    </p>#}
+{#    <p>#}
+{#      <label for="id_password">Пароль:</label>#}
+{#      <input type="password" name="password" autocomplete="current-password" required="" id="id_password">#}
+{#    </p>#}
+{#    '''#}
+
+
+    {#  Вариант 2 - выведем "отдельно" каждое поле через цикл FOR! #}
+    {#  В этом варианте НЕ выходит стандартная ошибка ....#}
+
+{#    {% for field in form %}#}
+{#      Для "стилизации" ФОРМЫ обернем в class="form-group !!!#}
+{#      <div class="form-group">#}
+{#        <label for="">{{ field.label }}</label>#}
+{#          {{ field }}#}
+{##}
+{#        {% if field.errors %}#}
+{#          <p>{{ field.errors }}</p>#}
+{#        {% endif %}#}
+{##}
+{#      </div>#}
+{#    {% endfor %}#}
+
+    <button type="submit">Авторизоваться</button>
+
+  </form>
+
+{#{% endblock %}#}
+

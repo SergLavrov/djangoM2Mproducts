@@ -1,0 +1,61 @@
+{% extends 'products/home.html' %}
+
+{% block content %}
+
+<hr>
+    <div style="margin-left: 150px">
+
+        <div>
+          <h3 class="pt-3" style="color: black">{{ product.name_prod }} / Артикул - {{ product.article }}</h3>
+          <h4 style="font-family: cursive; color: dimgrey">Категория - {{ product.category.name_cat }}</h4>
+{#          Можно привязать к каждому продукту ВСЕ связанные с этим продуктом РАЗМЕРЫ (при добавлении)#}
+            {% for s in product.sizes.all %}
+                {{ s.name_size }}
+            {% endfor %}
+{#        Вариант через КАРУСЕЛЬ: #}
+          <div id="carouselExampleIndicators" class="carousel slide" style="width: 500px">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                      aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                      aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                      aria-label="Slide 3"></button>
+            </div>
+
+            <div class="carousel-inner">
+
+{#              ПЕРВОЕ ФОТО д.б. - active !!! Это обязательное условие для КАРУСЕЛИ !!!#}
+{#              Взяли ПЕРВОЕ ФОТО как и в Шаблоне: all_products.html#}
+              <div class="carousel-item active">
+                <img src="{{ product.first_image.image.url }}" class="card-img" alt="{{ product.name_prod }}">
+              </div>
+
+              {% for img in product_images %}
+                <div class="carousel-item">
+                  <img src="{{ img.image.url }}" class="d-block w-100" alt="Фото">
+                </div>
+              {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+
+          <br>
+          <a href="{% url 'get-products' %}" class="btn btn-outline-secondary">Назад</a>
+
+        </div>
+    </div>
+
+<hr>
+
+
+{% endblock %}
