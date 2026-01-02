@@ -1,0 +1,229 @@
+{% extends 'products/home.html' %}
+
+{% block content %}
+
+  <div class="row col-12 offset-lg-2 col-lg-8">
+
+    <h4 class="pt-5" style="text-align: center; padding-bottom: 10px">Add product:</h4>
+
+    {% if error %}
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" class="row" enctype="multipart/form-data" action="{% url 'add-product' %}">
+
+      {% csrf_token %}
+
+      <div class="col-12 col-lg-6 pb-3">
+          <label for="inputnameprod" class="form-label fw-medium">Наименование товара</label>
+          <input type="text" name="name_prod" class="form-control" id="inputnameprod" placeholder="Введите название товара">
+      </div>
+
+      <div class="col-12 col-lg-6 pb-3">
+          <label for="inputarticle" class="form-label fw-medium">Артикул</label>
+          <input type="text" name="article" class="form-control" id="inputarticle" placeholder="Введите артикул товара">
+      </div>
+
+{#      <select name="category_id">#}
+{#        {% for category in categories %}#}
+{#          <option value="{{ category.id }}">{{ category.name_cat }}</option>#}
+{#        {% endfor %}#}
+{#      </select>#}
+      <div class="col-12 col-lg-6 pb-3">
+        <label for="inputcategory" class="form-label fw-medium">Категория товара</label>
+        <select class="form-select" id="inputcategory" name="category_id">
+          <option selected disabled>Выберите категорию товара</option>
+
+          {% for category in categories %}
+
+          <option value="{{ category.id }}">{{ category.name_cat }}</option>
+
+          {% endfor %}
+        </select>
+      </div>
+{#      P.S.: value="{{ category.id }}">{{ category.name_cat }}#}
+{#            "category.name_cat" --> "category" берем из class Product(models.Model):#}
+{#                                   --> имя: name_cat = из class Category #}
+
+      <hr>
+      <p>
+
+{#      2 Вар. для ManyToManyField: через CHECKBOX можно привязать НЕСКОЛЬКО размеров одному товару! #}
+{#      <div class="col-12 col-lg-6 pb-3">#}
+{#          <label>Выберите размер</label><br>#}
+{#          {% for size in sizes %}#}
+{#             <input type="checkbox" name="sizes_for_getlist" value="{{ size.id }}">{{ size.name_size }} <br />#}
+{#          {% endfor %}#}
+{#          <input type="submit" value="Сохранить">#}
+{#        P.S. - ЗДЕСЬ можно НЕ делать <input type="submit" value="Сохранить">, т.к. ВНИЗУ есть #}
+{#        <button type="submit" class="btn btn-secondary">Save</button>, которая подтвердит отправку ВСЕХ данных #}
+{#        ВНУТРИ <form method="POST"...></form>#}
+{#      </div>#}
+
+{#        МОЙ ВАРИАНТ !!! Делал сам !#}
+{#        <h6>Выберите размер:</h6><br>#}
+{#            {% for size in size_list %}#}
+{#              <hr>#}
+{#              <div class="col-12 col-lg-4 pb-3">#}
+{#                <label>#}
+{#                  <input type="checkbox" class="form-check-input" name="sizes_for_getlist" value="{{ size.id }}">#}
+{#                  <span>{{ size.name_size }}</span>#}
+{#                </label>#}
+{#              </div>#}
+{#                  <input type="checkbox" class="form-check-input" name="sizes_for_getlist"#}
+{#                         value="{{ size.id }}">{{ size.name_size }} <br/>#}
+{##}
+{#              <div class="col-12 col-lg-4 pb-3">#}
+{#                <label for="inputszstock" class="form-label fw-medium">Товар на складе</label>#}
+{#                <input type="number" name="size_in_stock" class="form-control" id="inputszstock" min="1"#}
+{#                       placeholder="Введите количество товара">#}
+{#              </div>#}
+{#              <div class="col-12 col-lg-4 pb-3">#}
+{#                <label for="inputszprice" class="form-label fw-medium">Цена</label>#}
+{#                <input type="number" name="size_price" class="form-control" id="inputszprice" min="1"#}
+{#                         placeholder="Введите цену товара">#}
+{#              </div>#}
+{#            {% endfor %}#}
+
+
+{#    # ПОСЛЕДНИЙ РАБОЧИЙ ВАРИАНТ:#}
+      <h6>Выберите размер:</h6><br>
+      {% for size in size_list %}
+        <div class="row g-2 align-items-end">
+        <hr>
+          <div class="col">
+            <label>
+              <input type="checkbox" name="sizes_for_getlist" value="{{ size.id }}">
+              {{ size.name_size }}
+            </label>
+          </div>
+
+          <div class="col">
+            <label class="form-label">Введите количество товара</label>
+            <input type="number" name="size_in_stock_{{ size.id }}" min="0"
+                   class="form-control"
+                   placeholder="Количество на складе">
+          </div>
+
+          <div class="col">
+            <label class="form-label">Цена</label>
+            <input type="number" name="size_price_{{ size.id }}" min="0" step="0.01"
+                   class="form-control"
+                   placeholder="Цена">
+          </div>
+        </div>
+      {% endfor %}
+
+
+{#        ПОСЛЕДНИЙ РАБОЧИЙ ВАРИАНТ с использованием JavaScript (см.внизу): НЕ РАБОЧИЙ !!!#}
+{#      <h6>Выберите размер:</h6><br>#}
+{#        {% for size in size_list %}#}
+{#          <div class="row g-2 align-items-end">#}
+{#            <div class="col">#}
+{#              <label>#}
+{#                <input type="checkbox" class="size-checkbox" data-size="{{ size.id }}">#}
+{#                {{ size.name_size }}#}
+{#              </label>#}
+{#            </div>#}
+{##}
+{#            <div class="col">#}
+{#              <label>На складе</label>#}
+{#              <input type="number" name="size_in_stock_{{ size.id }}" min="0"#}
+{#                     class="form-control size-stock"#}
+{#                     data-size="{{ size.id }}"#}
+{#                     disabled>#}
+{#            </div>#}
+{##}
+{#            <div class="col">#}
+{#              <label>Цена</label>#}
+{#              <input type="number" name="size_price_{{ size.id }}" min="0" step="0.01"#}
+{#                     class="form-control size-price"#}
+{#                     data-size="{{ size.id }}"#}
+{#                     disabled>#}
+{#            </div>#}
+{#          </div>#}
+{#        {% endfor %}#}
+
+
+{#    ПЕРВОНАЧАЛЬНЫЙ ВАРИАНТ:#}
+{#        {% for size in size_list %}#}
+{#          <div class="col-12 col-lg-4 pb-3">#}
+{#            <label>#}
+{#              <input type="checkbox" name="sizes_for_getlist" value="{{ size.id }}">{{ size.name_size }}#}
+{#            </label>#}
+{#          </div>#}
+{#          <div class="col-12 col-lg-4 pb-3">#}
+{#            <input type="number" name="size_in_stock" placeholder="Количество на складе">#}
+{#          </div>#}
+{#          <div class="col-12 col-lg-4 pb-3">#}
+{#            <input type="number" name="size_price" placeholder="Цена">#}
+{#          </div>#}
+{#        {% endfor %}#}
+          <p>
+          <hr>
+
+      <div></div>
+
+{#      Вар.1 Добавление ФОТО  - class ProductImage(models.Model):#}
+{#        Т.к. будет еще одно, либо НЕСКОЛЬКО доп-ных фото - в views используем  getlist !!!#}
+
+{#      <div class="col-12 col-lg-4 pb-3" style="margin-bottom: 15px;">#}
+{#        <label for="image1">Фото 1</label>#}
+{#        <input type="file" id="image1" name="images_for_getlist">#}
+{#      </div>#}
+{##}
+{#      <div class="col-12 col-lg-4 pb-3" style="margin-bottom: 15px;">#}
+{#        <label for="image2">Фото 2</label>#}
+{#        <input type="file" id="image2" name="images_for_getlist">#}
+{#      </div>#}
+{##}
+{#      <div class="col-12 col-lg-4 pb-3" style="margin-bottom: 15px;">#}
+{#        <label for="image3">Фото 3</label>#}
+{#        <input type="file" id="image3" name="images_for_getlist">#}
+{#      </div>#}
+
+{#      Вар.2 ХОРОШИЙ ВАРИАНТ для ФОТО через использоввание "multiple" в <input>!!! #}
+{#    Т.е. можно через Shift выбрать СРАЗУ НЕСКОЛЬКО ФОТОК и одновременно их прикрепить !!!#}
+      <label for="images">Загрузите фотографии товара</label>
+      <input type="file" id="images" name="images_for_getlist" multiple>
+
+      <p>
+      <div class="col-12" style="padding-bottom: 15px">
+        <button type="submit" class="btn btn-secondary">Сохранить</button>
+{#                                      При нажатии на SUBMIT данные отправляются на СЕРВЕР командой:#}
+{#                                      см выше:<form method="POST" class="row" action="{% url 'add-product' %}">#}
+{#        <a href="{% url 'get-products-list' %}" class="btn btn-outline-secondary">Back</a>#}
+      </div>
+    </form>
+
+{#    <script>#}
+{#      document.addEventListener("DOMContentLoaded", function () {#}
+{#          // находим все чекбоксы размеров#}
+{#          const checkboxes = document.querySelectorAll(".size-checkbox");#}
+{##}
+{#          checkboxes.forEach(cb => {#}
+{#              cb.addEventListener("change", function () {#}
+{#                  const sizeId = this.dataset.size;#}
+{##}
+{#                  // находим соответствующие поля количества и цены#}
+{#                  const stockInput = document.querySelector(`.size-stock[data-size="${sizeId}"]`);#}
+{#                  const priceInput = document.querySelector(`.size-price[data-size="${sizeId}"]`);#}
+{##}
+{#                  if (this.checked) {#}
+{#                      stockInput.disabled = false;#}
+{#                      priceInput.disabled = false;#}
+{#                  } else {#}
+{#                      stockInput.disabled = true;#}
+{#                      priceInput.disabled = true;#}
+{#                      stockInput.value = "";  // очищаем значение#}
+{#                      priceInput.value = "";#}
+{#                  }#}
+{#              });#}
+{#          });#}
+{#      });#}
+{#  </script>#}
+  </div>
+
+{% endblock %}

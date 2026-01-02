@@ -37,8 +37,8 @@
 {#                                   --> имя: name_cat = из class Category #}
 
 
-{#      1 Вар для ManyToManyField: через ВЫПАДАЮЩИЙ СПИСОК - select (можно выбрать только ОДИН размер !!!#}
-      <div class="col-12 col-lg-6 pb-3">
+{#    1 Вар. для ManyToManyField: через ВЫПАДАЮЩИЙ СПИСОК - select (можно выбрать только ОДИН размер !!!#}
+      <div class="col-12 col-lg-6 pb-3">.
         <label for="inputsize" class="form-label fw-medium">Размер</label>
         <select class="form-select" id="inputsize" name="size_id">
           <option selected disabled>Выберите размер</option>
@@ -63,7 +63,7 @@
       </div>
 
 
-        {#      Добавление "ДОПОЛНИТЕЛЬНЫХ" ФОТО  - class ProductImage(models.Model):#}
+{#      Добавление "ДОПОЛНИТЕЛЬНЫХ" ФОТО  - class ProductImage(models.Model):#}
 {#        Т.к. будет еще одно, либо НЕСКОЛЬКО доп-ных фото - в views используем  getlist !!!#}
 
       <div class="col-12 pb-3" style="margin-bottom: 15px; padding-top: 10px">

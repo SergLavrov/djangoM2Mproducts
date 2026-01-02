@@ -39,7 +39,16 @@ class Size(models.Model):
     name_size = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return self.name_size
+        return str(self.name_size)
+
+'''
+Модели Product и Size остаются связанными отношением многие-ко-многим, 
+однако теперь мы явно определяем промежуточную модель - 'ProductSize', 
+которая связана отношением один-ко-многим с обеими моделями и при этом также определяет 
+2 дополнительных поля. Для связи с промежуточной моделью в конструктор ForeignKey 
+передается параметр "through", который указывает на название промежуточной таблицы, 
+создаваемой для промежуточной модели 'ProductSize'.
+'''
 
 
 class Product(models.Model):
@@ -58,11 +67,17 @@ class Product(models.Model):
         return self.product_images.first()
 
 
+'''
+создание ДОПОЛНИТЕЛЬНЫХ полей в ПРОМЕЖУТОЧНОЙ  таблице ProductSize:
+'''
 class ProductSize(models.Model):
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size_in_stock = models.PositiveIntegerField(default=0)
     size_price = models.FloatField(default=0)
+
+    def __str__(self):
+        return f"{self.product} - {self.size}"
 
 
 class ProductImage(models.Model):

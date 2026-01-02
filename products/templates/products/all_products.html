@@ -26,7 +26,7 @@
         {% for product in products %}
           <div class="card" style="width: 14rem; border-image: 10 fill">
 {#          ВАРИАНТ через related_name='product_images' - см. class Model --> def first_image(self):#}
-{#            Взяли толко 1-ое ФОТО из всех фоток, привязанных к данному товару, чтобы выести на ГЛАВНОЙ странице!#}
+{#            Взяли только 1-ое ФОТО из всех фоток, привязанных к данному товару, чтобы выести на ГЛАВНОЙ странице!#}
 {#            Для это в models.py - class Product(models.Model):#}
 {#            прописали функцию def first_image(self):#}
 {#                                  return self.product_images.first()#}
@@ -51,11 +51,13 @@
                 <p>
 {#                  <p class="card-text">{{ product.description }}</p>#}
                   <div class="d-flex justify-content-between">
-                        <a href="{% url 'product-details' product.id %}" class="btn btn-outline-secondary btn-sm">Подробно</a>
-{#                        <a href="{% url 'add-to-basket' product.id %}" class="btn btn-outline-secondary">Add to basket</a>#}
-{#                        {% if user.is_authenticated %}#}
+                        <a href="{% url 'product-details' product.id %}" class="btn btn-outline-secondary btn-sm">
+                          Подробно
+                        </a>
+{#                  <a href="{% url 'add-to-basket' product.id %}" class="btn btn-outline-secondary">Add to basket</a>#}
+{#                  {% if user.is_authenticated %}#}
 {#                        <a href="{% url 'add-to-basket' product.id %}"><i class="fa fa-shopping-cart"></i></a>#}
-{#                                            {% endif %}#}
+{#                  {% endif %}#}
                   </div>
             </div>
           </div>
