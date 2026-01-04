@@ -39,7 +39,20 @@ class Size(models.Model):
     name_size = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
+        if self.name_size is None:
+            return "Без размера"  # или можно: "—"
         return str(self.name_size)
+    # return str(self.name_size)
+    # return str(self.name_size) if self.name_size is not None else ""
+    # return str(self.name_size) if self.name_size is not None else "—"
+
+
+'''     
+Метод __str__ определяет строковое представление объекта.
+ __str__ делают для удобства: чтобы объекты модели отображались читаемо в админке и шаблонах;
+Благодаря __str__, при выводе объекта Size ты получишь "41", а не "Size object (41)"
+Чтобы при работе с ForeignKey/ManyToMany в формах пользователю показывалось понятное значение.
+'''
 
 '''
 Модели Product и Size остаются связанными отношением многие-ко-многим, 

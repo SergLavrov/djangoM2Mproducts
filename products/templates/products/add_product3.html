@@ -89,62 +89,71 @@
 
 
 {#    # ПОСЛЕДНИЙ РАБОЧИЙ ВАРИАНТ:#}
-      <h6>Выберите размер:</h6><br>
-      {% for size in size_list %}
-        <div class="row g-2 align-items-end">
-        <hr>
-          <div class="col">
-            <label>
-              <input type="checkbox" name="sizes_for_getlist" value="{{ size.id }}">
-              {{ size.name_size }}
-            </label>
-          </div>
-
-          <div class="col">
-            <label class="form-label">Введите количество товара</label>
-            <input type="number" name="size_in_stock_{{ size.id }}" min="0"
-                   class="form-control"
-                   placeholder="Количество на складе">
-          </div>
-
-          <div class="col">
-            <label class="form-label">Цена</label>
-            <input type="number" name="size_price_{{ size.id }}" min="0" step="0.01"
-                   class="form-control"
-                   placeholder="Цена">
-          </div>
-        </div>
-      {% endfor %}
-
-
-{#        ПОСЛЕДНИЙ РАБОЧИЙ ВАРИАНТ с использованием JavaScript (см.внизу): НЕ РАБОЧИЙ !!!#}
 {#      <h6>Выберите размер:</h6><br>#}
-{#        {% for size in size_list %}#}
-{#          <div class="row g-2 align-items-end">#}
-{#            <div class="col">#}
-{#              <label>#}
-{#                <input type="checkbox" class="size-checkbox" data-size="{{ size.id }}">#}
-{#                {{ size.name_size }}#}
-{#              </label>#}
-{#            </div>#}
+{#      {% for size in size_list %}#}
+{#        <div class="row g-2 align-items-end">#}
+{#        <hr>#}
+{#          <div class="col">#}
+{#            <label>#}
+{#              <input type="checkbox" name="sizes_for_getlist" value="{{ size.id }}">#}
+{#              {{ size.name_size }}#}
 {##}
-{#            <div class="col">#}
-{#              <label>На складе</label>#}
-{#              <input type="number" name="size_in_stock_{{ size.id }}" min="0"#}
-{#                     class="form-control size-stock"#}
-{#                     data-size="{{ size.id }}"#}
-{#                     disabled>#}
-{#            </div>#}
-{##}
-{#            <div class="col">#}
-{#              <label>Цена</label>#}
-{#              <input type="number" name="size_price_{{ size.id }}" min="0" step="0.01"#}
-{#                     class="form-control size-price"#}
-{#                     data-size="{{ size.id }}"#}
-{#                     disabled>#}
-{#            </div>#}
+{#          Для варианта name_size = NULL, т.е. БЕЗ обозначения РАЗМЕРА !!! #}
+{#              <input type="checkbox" name="sizes_for_getlist" value="{{ size.id }}">#}
+{#              {{ size.name_size|default:"Без размера" }}#}
+{#            </label>#}
 {#          </div>#}
-{#        {% endfor %}#}
+{##}
+{#          <div class="col">#}
+{#            <label class="form-label">Введите количество товара</label>#}
+{#            <input type="number" name="size_in_stock_{{ size.id }}" min="0"#}
+{#                   class="form-control"#}
+{#                   placeholder="Количество на складе">#}
+{#          </div>#}
+{##}
+{#          <div class="col">#}
+{#            <label class="form-label">Цена</label>#}
+{#            <input type="number" name="size_price_{{ size.id }}" min="0" step="0.01"#}
+{#                   class="form-control"#}
+{#                   placeholder="Цена">#}
+{#          </div>#}
+{#        </div>#}
+{#      {% endfor %}#}
+
+
+{#        ПОСЛЕДНИЙ РАБОЧИЙ ВАРИАНТ с использованием   JavaScript  (см.внизу) !!! #}
+      <h6>Выберите размер:</h6><br>
+        {% for size in size_list %}
+          <div class="row g-2 align-items-end">
+            <div class="col">
+              <label>
+                <input type="checkbox"
+                       name="sizes_for_getlist"
+                       value="{{ size.id }}"
+                       class="size-checkbox"
+                       data-size="{{ size.id }}">
+{#                {{ size.name_size }}#}
+                {{ size.name_size|default:"Без размера" }} {# Для варианта name_size = NULL #}
+              </label>
+            </div>
+
+            <div class="col">
+              <label>На складе</label>
+              <input type="number" name="size_in_stock_{{ size.id }}" min="0"
+                     class="form-control size-stock"
+                     data-size="{{ size.id }}"
+                     disabled>
+            </div>
+
+            <div class="col">
+              <label>Цена</label>
+              <input type="number" name="size_price_{{ size.id }}" min="0" step="0.01"
+                     class="form-control size-price"
+                     data-size="{{ size.id }}"
+                     disabled>
+            </div>
+          </div>
+        {% endfor %}
 
 
 {#    ПЕРВОНАЧАЛЬНЫЙ ВАРИАНТ:#}
@@ -198,32 +207,54 @@
       </div>
     </form>
 
-{#    <script>#}
-{#      document.addEventListener("DOMContentLoaded", function () {#}
-{#          // находим все чекбоксы размеров#}
-{#          const checkboxes = document.querySelectorAll(".size-checkbox");#}
+{#!!! ПРЕИМУЩЕСТВА использования Данного JavaScript в форме выбора размеров при ДОБАВЛЕНИИ ТОВАРА:#}
+{#  #}
+{#1. Динамическое управление полями#}
+{#    Скрипт автоматически включает/отключает поля количества и цены в зависимости от того, выбран ли чекбокс размера.#}
+{#    ➝ Пользователь не может случайно ввести цену/количество для размера, который не отмечен.#}
 {##}
-{#          checkboxes.forEach(cb => {#}
-{#              cb.addEventListener("change", function () {#}
-{#                  const sizeId = this.dataset.size;#}
+{#2. Чистота данных#}
+{#    При снятии галочки значения очищаются (stockInput.value = "", priceInput.value = "").#}
+{#    ➝ В request.POST не попадут лишние данные, которые могут запутать обработку на сервере.#}
 {##}
-{#                  // находим соответствующие поля количества и цены#}
-{#                  const stockInput = document.querySelector(`.size-stock[data-size="${sizeId}"]`);#}
-{#                  const priceInput = document.querySelector(`.size-price[data-size="${sizeId}"]`);#}
+{#3. Удобство интерфейса#}
+{#    Пользователь видит только те поля, которые реально относятся к выбранным размерам. #}
+{#    Это снижает визуальный шум и делает форму более понятной.#}
 {##}
-{#                  if (this.checked) {#}
-{#                      stockInput.disabled = false;#}
-{#                      priceInput.disabled = false;#}
-{#                  } else {#}
-{#                      stockInput.disabled = true;#}
-{#                      priceInput.disabled = true;#}
-{#                      stockInput.value = "";  // очищаем значение#}
-{#                      priceInput.value = "";#}
-{#                  }#}
-{#              });#}
-{#          });#}
-{#      });#}
-{#  </script>#}
+{#4. Минимизация ошибок#}
+{#    Без JS пользователь мог бы оставить включённые поля пустыми или случайно заполнить лишние. #}
+{#    Скрипт предотвращает такие ситуации ещё на клиенте.#}
+{##}
+{#5. Гибкость для будущих улучшений#}
+{#    Такой подход легко расширить: например, можно добавить автоматическую валидацию (подсветку ошибок), #}
+{#    динамический расчёт итоговой стоимости или подсказки.#}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // находим все чекбоксы размеров
+            const checkboxes = document.querySelectorAll(".size-checkbox");
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener("change", function () {
+                    const sizeId = this.dataset.size;
+
+                    // находим соответствующие поля количества и цены
+                    const stockInput = document.querySelector(`.size-stock[data-size="${sizeId}"]`);
+                    const priceInput = document.querySelector(`.size-price[data-size="${sizeId}"]`);
+
+                    if (this.checked) {
+                        stockInput.disabled = false;
+                        priceInput.disabled = false;
+                    } else {
+                        stockInput.disabled = true;
+                        priceInput.disabled = true;
+                        stockInput.value = "";  // очищаем значение
+                        priceInput.value = "";
+                    }
+                });
+            });
+        });
+    </script>
   </div>
 
 {% endblock %}

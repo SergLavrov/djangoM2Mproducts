@@ -8,18 +8,6 @@ from products.models import Product, Category, Size, ProductSize, ProductImage
 #     return render(request, 'products/home.html')
 
 
-# def create_through_relations(apps, schema_editor):
-#     Product = apps.get_model('products', 'Product')
-#     ProductSize = apps.get_model('products', 'ProductSize')
-#     for prod in Product.objects.all():
-#         for size in prod.sizes.all():
-#             ProductSize(  # берем 4 поля из clas ProductSize
-#                 size=size,
-#                 product=prod,
-#                 size_in_stock=0,
-#                 size_price=0
-#             ).save()
-
 def get_prods(request):
     category_list = Category.objects.all()
     products = Product.objects.all().filter(is_deleted=False)
@@ -49,6 +37,9 @@ def add_product3(request):
         try:
             if not name_prod or not article or not category_id:
                 raise ValidationError('Заполните все обязательные поля!')
+
+            if Product.objects.filter(article=article).exists():
+                raise ValidationError('Такой артикул уже существует!')
 
             if not size_ids:
                 raise ValidationError('Выберите хотя бы один размер товара на складе!')
@@ -87,7 +78,7 @@ def add_product3(request):
             # product.save()
             '''
 
-            # Связываем размеры
+            # Связываем РАЗМЕРЫ:
             # ПОСЛЕДНИЙ РАБОЧИЙ ВАРИАНТ - каждый выбранный размер связывался со своим "количеством" и "ценой".
             # Теперь всё работает по "size_id" !!!
             # см. также в шаблоне: name="size_in_stock_{{ size.id }}" и name="size_price_{{ size.id }}"
@@ -139,7 +130,8 @@ def add_product3(request):
             return HttpResponseRedirect(reverse('get-products'))
 
         except ValidationError as e:
-            error = str(e)
+            # error = str(e) # ошибка выводится в виде строки ['Заполните все обязательные поля!']
+            error = " ".join(e.messages)  # превращаем "СПИСОК" в "СТРОКУ": Заполните все обязательные поля!
 
             category_list = Category.objects.all()
             size_list = Size.objects.all()
@@ -148,7 +140,6 @@ def add_product3(request):
                 'size_list': size_list,
                 'error': error,
             }
-
             return render(request, 'products/add_product3.html', data)
 
     else:
@@ -158,7 +149,6 @@ def add_product3(request):
             'categories': category_list,
             'size_list': size_list,
         }
-
         return render(request, 'products/add_product3.html', data)
 
 
